@@ -1,0 +1,706 @@
+threagile_version:  1.0.0
+
+
+title:  Cetic  -  Model  with  Compromised  firewall  2
+
+date:  2021-06-29
+
+author:
+    name:  Yassine  Amraoui
+    homepage:  https://github.com/cetic/devsecops
+
+
+
+management_summary_comment:  null
+
+business_criticality:  critical  #  values:  archive,  operational,  important,  critical,  mission-critical
+
+
+business_overview:
+    description:  We  have  carried  out  a  DevSecOps  project  which  is  internal,  using  free  and  open-source  tools.  Vulnerabilities,  threats  are  created  and  used  in  our  use  cases  on  virtual  machines  that  will  later  be  used  on  autonomous  cars.  The  financial  impact  is  null.
+    images:  null
+#        -  custom-image-1.png:  Some  dummy  image  1
+
+
+
+technical_overview:
+    description:  null
+    images:  null  #  Image  link
+
+questions:
+
+
+abuse_cases:
+    Sending  a  backdoor  from  Github  Actions  to  the  ROSTarget1  machine  via  apt-install  :  >
+        The  installation  of  the  backdoor  was  scripted  in  the  post  install  script  of  an  ipTables  Debian  packages  so  that  when  updating  the  firewall,
+        the  backdoor  is  activated  with  sudo  privileges  and  provide  full  command  line  access  to  the  infected  machine
+
+    Remotely  take  over  and  control  the  vehicle  with  a  RAT:
+        Safety  ->  Disable  safety  systems  to  trigger  accidents  and  Privacy  ->  Spy  on  a  vehicle  with  GPS,  entertainment  system  (cameras, phone, wifi, etc.)   Compromise  other  vehicles  (DDOS)       Unavailability  of  service,  network  collapse,  defeating  service  integrity
+
+
+security_requirements:
+    Input  Validation:
+    Securing  Administrative  Access:
+    EU-DSGVO:
+
+
+#  Tags  can  be  used  for  anything,  it's  just  a  tag.  Also  risk  rules  can  act  based  on  tags  if  you  like.
+#  Tags  can  be  used  for  example  to  name  the  products  used  (which is more concrete than the technology types that only specify the type)   -  linux
+    -  git
+    -  vmware
+
+data_assets:
+    Backdoor  Create-BD:  &backdoor-create-bd  #  this  example  shows  the  inheritance-like  features  of  YAML
+        id:  backdoor-create-bd
+        description:  The  backdoor_main  file  pulls  the  repo  on  the  kali  machine,  then  changes  the  permissions  and  executes  create_BD.sh.  The  script  is  accessible  in  cetic/devsecops/backdoor/.  The  backdoor_main.yml  creates  the  backdoor,  downloads  the  correct  iptables  package,  depackages  it,  adds  the  backdoor  and  repackages  it.  Then  he  puts  it  in  the  repo  on  the  kali  machine
+        usage:  devops  #  values:  business,  devops
+        tags:
+            -  git
+        origin:  cetic/devsecops/backdoor
+        owner:  Cetic
+        quantity:  very-few  #  values:  very-few,  few,  many,  very-many
+        confidentiality:  internal  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+
+technical_assets:
+
+    CI  Pipeline:
+        id:  ci-pipeline
+        #diagram_tweak_order:  0  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  CI  Pipeline
+        type:  process  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  true
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  build-pipeline  #  values:  see  help
+        tags:
+            -  git
+        internet:  true
+        machine:  container  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  confidential  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  true
+        data_assets_processed:  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+            -  file
+            -  json
+            -  xml
+        communication_links:
+            Artifact  Storage:
+                target:  artifact-storage
+                description:
+                protocol:  https
+                authentication:  credentials
+                authorization:  none
+                tags:  null
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops
+                data_assets_sent:  #  sequence  of  IDs  to  reference
+                data_assets_received:  #  sequence  of  IDs  to  reference
+    CD  Pipeline:
+        id:  cd-pipeline
+        #diagram_tweak_order:  0  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  CD  Pipeline
+        type:  process  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  true
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  build-pipeline  #  values:  see  help
+        tags:
+            -  git
+        internet:  false
+        machine:  container  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  confidential  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  null  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+        communication_links:
+            Update  Agent:
+                target:  update-agent
+                description:  update-agent
+                protocol:  https
+                authentication:  credentials
+                authorization:  technical-user
+                tags:  null
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops
+                data_assets_sent:  #  sequence  of  IDs  to  reference
+                data_assets_received:  #  sequence  of  IDs  to  reference
+
+    Compromised-firewall:
+        id:  compromised-firewall
+        #diagram_tweak_order:  0  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  Compromised  firewall
+        type:  datastore  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  true
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  desktop    #  values:  see  help
+        tags:
+        internet:  false
+        machine:  physical  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  confidential  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  null  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+        communication_links:  null
+
+    Packages:
+        id:  packages
+        #diagram_tweak_order:  0  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  Packages  from  the  ..
+        type:  datastore  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  true
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  desktop    #  values:  see  help
+        tags:  null
+        internet:  true
+        machine:  virtual  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  confidential  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  null  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+            -  backdoor-create-bd
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+            -  file
+        communication_links:  null
+
+    Vehicle:
+        id:  vehicle
+        #diagram_tweak_order:  0  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  vehicle  (debian+ros)       type:  process  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  true
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  desktop  #  values:  see  help
+        tags:
+        internet:  false
+        machine:  physical  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  confidential  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  null  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+            -  backdoor-create-bd
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+            -  file
+        communication_links:
+            Compromised  firewall:
+                target:  compromised-firewall
+                description:  Compromised  firewall
+                protocol:  https
+                authentication:  credentials
+                authorization:  technical-user
+                tags:  null
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops
+                data_assets_sent:  #  sequence  of  IDs  to  reference
+                data_assets_received:  #  sequence  of  IDs  to  reference
+            Packages:
+                target:  packages
+                description:  Packages
+                protocol:  https
+                authentication:  credentials
+                authorization:  technical-user
+                tags:  null
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops
+                data_assets_sent:  null  #  sequence  of  IDs  to  reference
+                data_assets_received:  null  #  sequence  of  IDs  to  reference
+
+    Deploy  Service:
+        id:  deploy-service
+        #diagram_tweak_order:  0  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  Deploy  Service
+        type:  process  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  true
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  service  #  values:  system,  service,  application,  component
+        technology:  build-pipeline  #  values:  see  help
+        tags:
+            -  git
+        internet:  true
+        machine:  container  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  internal  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+        communication_links:
+            CD  pipeline:
+                target:  cd-pipeline
+                description:  Link  to  the  CD  pipeline
+                protocol:  https  #  values:  see  help
+                authentication:  credentials  #  values:  none,  credentials,  session-id,  token,  client-certificate,  two-factor
+                authorization:  none  #  values:  none,  technical-user,  enduser-identity-propagation
+                tags:
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops  #  values:  business,  devops
+                data_assets_sent:  null  #  sequence  of  IDs  to  reference
+                data_assets_received:  null  #  sequence  of  IDs  to  reference
+                #diagram_tweak_weight:  1
+                #diagram_tweak_constraint:  false
+
+    Update  Agent:
+        id:  update-agent
+        #diagram_tweak_order:  50  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  update-agent
+        type:  process  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  false
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  desktop    #  values:  see  help
+        tags:
+        internet:  false
+        machine:  physical  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  internal  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  null  #  sequence  of  IDs  to  reference
+        data_assets_stored:  null  #  sequence  of  IDs  to  reference
+        data_formats_accepted:  null  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+
+        communication_links:
+            Compromised  firewall:
+                target:  compromised-firewall
+                description:  Compromised  firewall
+                protocol:  https  #  values:  see  help
+                authentication:  credentials  #  values:  none,  credentials,  session-id,  token,  client-certificate,  two-factor
+                authorization:  none  #values:  none,  technical-user,  enduser-identity-propagation
+                tags:
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops  #  values:  business,  devops
+                data_assets_sent:  null  #  sequence  of  IDs  to  reference
+                data_assets_received:  null  #  sequence  of  IDs  to  reference
+                #diagram_tweak_weight:  5
+                #diagram_tweak_constraint:  false
+            Packages:
+                target:  packages
+                description:  Packages
+                protocol:  https  #  values:  see  help
+                authentication:  credentials  #  values:  none,  credentials,  session-id,  token,  client-certificate,  two-factor
+                authorization:  technical-user  #values:  none,  technical-user,  enduser-identity-propagation
+                tags:
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops  #  values:  business,  devops
+                data_assets_sent:  null  #  sequence  of  IDs  to  reference
+                data_assets_received:  null  #  sequence  of  IDs  to  reference
+                #diagram_tweak_weight:  5
+                #diagram_tweak_constraint:  false
+
+    Robotic  Developper:
+        id:  robot-dev
+        #diagram_tweak_order:  0  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  Robotic  Developper
+        type:  external-entity  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  true
+        out_of_scope:  true
+        justification_out_of_scope:  Managed  by  internal  developers
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  devops-client  #  values:  see  help
+        tags:
+            -  linux
+            -  git
+        internet:  true
+        machine:  physical  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Robotic  Developers
+        confidentiality:  internal  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+            -  file
+        communication_links:
+            Code  repository:
+                target:  code-repo
+                description:  Link  to  the  Git  repo
+                protocol:  https  #  values:  see  help
+                authentication:  credentials  #  values:  none,  credentials,  session-id,  token,  client-certificate,  two-factor
+                authorization:  technical-user  #  values:  none,  technical-user,  enduser-identity-propagation
+                tags:
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops  #  values:  business,  devops
+                data_assets_sent:  null  #  sequence  of  IDs  to  reference
+                data_assets_received:  null  #  sequence  of  IDs  to  reference
+                #diagram_tweak_weight:  1
+                #diagram_tweak_constraint:  false
+
+    Code  repository:
+        id:  code-repo
+        #diagram_tweak_order:  99  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  Code  repository  (Github)       type:  datastore  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  false
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  sourcecode-repository    #  values:  see  help
+        tags:
+            -  linux
+            -  git
+        internet:  true
+        machine:  virtual  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  confidential  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  code  repo  pipeline  might  contain  sensitive  configuration  values  like  backend  credentials,  certificates  etc.  and  is
+            therefore  rated  as  confidential.
+        multi_tenant:  true
+        redundant:  false
+        custom_developed_parts:  false
+        data_assets_processed:  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+            -  backdoor-create-bd
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+            -  file
+        communication_links:
+            CI  pipeline:
+                target:  ci-pipeline
+                description:  Link  to  the  ci  pipeline
+                protocol:  https
+                authentication:  credentials
+                authorization:  none
+                tags:  null
+                vpn:  false
+                ip_filtered:  false
+                readonly:  false
+                usage:  devops
+                data_assets_sent:  #  sequence  of  IDs  to  reference
+                data_assets_received:  #  sequence  of  IDs  to  reference
+
+    Artifact  Storage:
+        id:  artifact-storage
+        #diagram_tweak_order:  99  #  affects  left  to  right  positioning  (only within a trust boundary)       description:  Artifact  Storage
+        type:  datastore  #  values:  external-entity,  process,  datastore
+        usage:  devops  #  values:  business,  devops
+        used_as_client_by_human:  false
+        out_of_scope:  false
+        justification_out_of_scope:
+        size:  system  #  values:  system,  service,  application,  component
+        technology:  artifact-registry  #  values:  see  help
+        tags:
+            -  linux
+            -  git
+        internet:  true
+        machine:  virtual  #  values:  physical,  virtual,  container,  serverless
+        encryption:  none  #  values:  none,  transparent,  data-with-symmetric-shared-key,  data-with-asymmetric-shared-key,  data-with-enduser-individual-key
+        owner:  Cetic
+        confidentiality:  confidential  #  values:  public,  internal,  restricted,  confidential,  strictly-confidential
+        integrity:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        availability:  important  #  values:  archive,  operational,  important,  critical,  mission-critical
+        justification_cia_rating:  >
+            The  project  is  internal,  integrity  and  availability  are  important  to  achieve  our  use  cases.
+        multi_tenant:  false
+        redundant:  false
+        custom_developed_parts:  true
+        data_assets_processed:  #  sequence  of  IDs  to  reference
+        data_assets_stored:  #  sequence  of  IDs  to  reference
+        data_formats_accepted:  #  sequence  of  formats  like:  json,  xml,  serialization,  file,  csv
+            -  file
+        communication_links:
+            Deploy  Service:
+                target:  deploy-service
+                description:  Link  to  the  deploy  service
+                protocol:  https  #  values:  see  help
+                authentication:  credentials  #  values:  none,  credentials,  session-id,  token,  client-certificate,  two-factor
+                authorization:  technical-user  #  values:  none,  technical-user,  enduser-identity-propagation
+                tags:
+                vpn:  false
+                ip_filtered:  false
+                readonly:  true
+                usage:  devops  #  values:  business,  devops
+                data_assets_sent:  null  #  sequence  of  IDs  to  reference
+                data_assets_received:  null  #  sequence  of  IDs  to  reference
+                #diagram_tweak_weight:  1
+                #diagram_tweak_constraint:  false
+
+trust_boundaries:
+
+    CI-Pipeline:
+        id:  ci-pipeline
+        description:  ci-pipeline
+        type:  network-on-prem  #  values:  see  help
+        tags:
+        technical_assets_inside:  #  sequence  of  IDs  to  reference
+            -  code-repo
+            -  artifact-storage
+            -  ci-pipeline
+            -  deploy-service
+        trust_boundaries_nested:  #  sequence  of  IDs  to  reference
+
+    CD-Pipeline:
+        id:  cd-pipeline
+        description:  cd-pipeline
+        type:  network-on-prem  #  values:  see  help
+        tags:
+        technical_assets_inside:  #  sequence  of  IDs  to  reference
+            -  update-agent
+            -  cd-pipeline
+        trust_boundaries_nested:  #  sequence  of  IDs  to  reference
+
+    Vehicle:
+        id:  vehicle
+        description:  vehicle
+        type:  network-on-prem  #  values:  see  help
+        tags:  null
+        technical_assets_inside:  #  sequence  of  IDs  to  reference
+            -  compromised-firewall
+            -  vehicle
+            -  packages
+        trust_boundaries_nested:  null  #  sequence  of  IDs  to  reference
+
+
+shared_runtimes:
+
+    #  Need  to  ask
+    Code  repository:
+        id:  code-repo
+        description:
+        tags:
+            -  vmware
+        technical_assets_running:  #  sequence  of  IDs  to  reference
+
+
+individual_risk_categories:  #  used  for  adding  custom  manually  identified  risks
+
+    Backdoor  a  vehicle  through  a  compromised  update:
+        id:  compromised-update
+        description:  Adding  a  backdoor  to  a  Debian  iptables  package
+        impact:  Take  full  control  of  the  machine
+        asvs:  C.13
+        cheat_sheet:  Security  Verification  Requirements
+        action:  Verify  that  deserialization  of  untrusted  data  is  avoided  or  is  protected  in  both  custom  code  and  third-party  libraries  (such as JSON, XML and YAML parsers)       mitigation:  https://debian-handbook.info/browse/fr-FR/stable/sect.package-authentication.html
+        check:  https://www.debian.org/doc/manuals/securing-debian-manual/deb-pack-sign.en.html
+        function:  operations  #  values:  business-side,  architecture,  development,  operations
+        stride:  elevation-of-privilege  #  values:  spoofing,  tampering,  repudiation,  information-disclosure,  denial-of-service,  elevation-of-privilege
+        detection_logic:  ElasticSearch  alert  appears
+        risk_assessment:  ->  Need  to  do
+        false_positives:  Not  a  false  positive  but  it's  a  false  negative.  The  backdoor  file  is  labeled  as  secure
+        model_failure_possible_reason:  false
+        cwe:  502
+        risks_identified:
+            <b>Accessing  car  system  configuration  files</b>  at  <b>ROSTarget</b>:
+                severity:  critical  #  values:  low,  medium,  elevated,  high,  critical
+                exploitation_likelihood:  likely  #  values:  unlikely,  likely,  very-likely,  frequent
+                exploitation_impact:  very-high  #  values:  low,  medium,  high,  very-high
+                data_breach_probability:  probable    #  values:  improbable,  possible,  probable
+                data_breach_technical_assets:  null    #  list  of  technical  asset  IDs  which  might  have  data  breach
+                most_relevant_data_asset:  null
+                most_relevant_technical_asset:  null
+                most_relevant_communication_link:  null
+                most_relevant_trust_boundary:  null
+                most_relevant_shared_runtime:  null
+            <b>Disable  wifi  connection</b>  with  the  command  <b>nmcli  radio  wifi  off</b>:
+                severity:  critical  #  values:  low,  medium,  elevated,  high,  critical
+                exploitation_likelihood:  very-likely  #  values:  unlikely,  likely,  very-likely,  frequent
+                exploitation_impact:  very-high  #  values:  low,  medium,  high,  very-high
+                data_breach_probability:  possible  #  values:  improbable,  possible,  probable
+                data_breach_technical_assets:  null  #  list  of  technical  asset  IDs  which  might  have  data  breach
+                most_relevant_data_asset:  null
+                most_relevant_technical_asset:  null
+                most_relevant_communication_link:  null
+                most_relevant_trust_boundary:  null
+                most_relevant_shared_runtime:  null
+
+    Remotely  take  over  and  control  the  vehicle  with  a  RAT:
+        id:  remotely-take-over-control
+        description:  Remotely  take  over  and  control  the  vehicle  with  a  RAT  (Remote Access Tool)       impact:  Safety  ->  Disable  safety  systems  to  trigger  accidents  and  Privacy  ->  Spy  on  a  vehicle  with  GPS,  entertainment  system  (cameras, phone, wifi, etc.)       asvs:  /
+        cheat_sheet:  /
+        action:  /
+        mitigation:  1) Scan ROSTarget for malware with rootkit scanner like ClamAV, RKhunter or Chrootkit or use VirusTotal
+    check: https://upcloud.com/community/tutorials/scan-debian-server-malware/
+    function: operations # values: business-side, architecture, development, operations
+    stride: elevation-of-privilege # values: spoofing, tampering, repudiation, information-disclosure, denial-of-service, elevation-of-privilege
+    detection_logic: ElasticSearch alert appears (exe  file)
+    risk_assessment: -> Need to do
+    false_positives: Not a false positive but it's a false negative. The backdoor file is labeled as secure
+    model_failure_possible_reason: false
+    cwe: 506
+    risks_identified:
+      <b>Accessing car system configuration files</b> at <b>ROSTarget</b>:
+        severity: critical # values: low, medium, elevated, high, critical
+        exploitation_likelihood: frequent # values: unlikely, likely, very-likely, frequent
+        exploitation_impact: high # values: low, medium, high, very-high
+        data_breach_probability: possible  # values: improbable, possible, probable
+        data_breach_technical_assets: null  # list of technical asset IDs which might have data breach
+        most_relevant_data_asset: null
+        most_relevant_technical_asset: null
+        most_relevant_communication_link: null
+        most_relevant_trust_boundary: null
+        most_relevant_shared_runtime: null
+      <b>Take control of ; cameras, phone, wifi, etc</b>:
+        severity: critical # values: low, medium, elevated, high, critical
+        exploitation_likelihood: likely # values: unlikely, likely, very-likely, frequent
+        exploitation_impact: high # values: low, medium, high, very-high
+        data_breach_probability: probable # values: improbable, possible, probable
+        data_breach_technical_assets: null # list of technical asset IDs which might have data breach
+        most_relevant_data_asset: null
+        most_relevant_technical_asset: null
+        most_relevant_communication_link: null
+        most_relevant_trust_boundary: null
+        most_relevant_shared_runtime: null
+
+  Compromise other vehicles (DDOS):
+    id: ddos-attack
+    description: Attacker sends a lot of request with (cmd,  rooltkit,  ..)
+    impact: Unavailability of service, network collapse, defeating service integrity
+    asvs: V11.1.4
+    cheat_sheet: Business Logic Security Requirements
+    action: Verify the application has sufficient anti-automation controls to detect and protect against denial of service attacks.
+    mitigation: DDOS & Unwanted Traffic -> ip route add blackhole <@IP/32> | See routes in place -> ip route show | Show segments
+    check: DDoS Protection With IPtables -> https://javapipe.com/blog/iptables-ddos-protection/
+    function: operations  # values: business-side, architecture, development, operations
+    stride: denial-of-service  # values: spoofing, tampering, repudiation, information-disclosure, denial-of-service, elevation-of-privilege
+    detection_logic: Wireshark -> Network capture and anaylysis
+    risk_assessment: -> Need to do
+    false_positives: /
+    model_failure_possible_reason: false
+    cwe: 00
+    risks_identified:
+      <b>Unavailability of service, High latency</b>:
+        severity: critical # values: low, medium, elevated, high, critical
+        exploitation_likelihood: frequent # values: unlikely, likely, very-likely, frequent
+        exploitation_impact: high # values: low, medium, high, very-high
+        data_breach_probability: probable  # values: improbable, possible, probable
+        data_breach_technical_assets: null  # list of technical asset IDs which might have data breach
+        most_relevant_data_asset: null
+        most_relevant_technical_asset: null
+        most_relevant_communication_link: null
+        most_relevant_trust_boundary: null
+        most_relevant_shared_runtime: null
+
+
+  The attacker can scan the machine and discover open ports:
+    id: scan-by-attacker
+    description: The attacker can scan the machine
+    impact: Open ports become dangerous when legitimate services are exploited through security vulnerabilities or malicious services are introduced to a system via malware or social engineering, cybercriminals can use these services in conjunction with open ports to gain unauthorized access to sensitive data.
+    asvs: V9.2 - Server Communications Security Requirements
+    cheat_sheet: Verify that the application protects against SSRF attacks, by validating or sanitizing untrusted data or HTTP file metadata, such as filenames and URL input fields, use whitelisting of protocols, domains, paths and ports.
+    action: If 5 ports are scanned by an IP in a short period of time, the IP is added to an ipset list and blocked for 10 seconds.
+    mitigation: Change ports -> sudo vi /etc/ssh/sshd_config
+    check: Scanner protection with iptables -> https://pastebin.com/z67JXjsB | Change ports -> https://www.cyberciti.biz/faq/howto-change-ssh-port-on-linux-or-unix-server/
+    function: operations # values: business-side, architecture, development, operations
+    stride: denial-of-service # values: spoofing, tampering, repudiation, information-disclosure, denial-of-service, elevation-of-privilege
+    detection_logic: View ssh connections -> netstat -na | grep :22
+    risk_assessment: Port is opened by a service, otherwise it's closed by default. And no, you cannot exploit any service. That service needs to have a vulnerability to be exploited
+    false_positives: /
+    model_failure_possible_reason: false
+    cwe: 0
+    risks_identified:
+      <b>Accessing car system configuration files</b>:
+        severity: medium # values: low, medium, elevated, high, critical
+        exploitation_likelihood: very-likely # values: unlikely, likely, very-likely, frequent
+        exploitation_impact: medium # values: low, medium, high, very-high
+        data_breach_probability: possible  # values: improbable, possible, probable
+        data_breach_technical_assets: null  # list of technical asset IDs which might have data breach
+        most_relevant_data_asset: null
+        most_relevant_technical_asset: null
+        most_relevant_communication_link: null
+        most_relevant_trust_boundary: null
+        most_relevant_shared_runtime: null
+
+
+
+
+# NOTE:
+# For risk tracking each risk-id needs to be defined (the  string  with  the  @  sign  in  it). These unique risk IDs
+# are visible in the PDF report (the  small  grey  string  under  each  risk), the Excel (column  "ID"), as well as the JSON responses.
+# Some risk IDs have only one @ sign in them, while others multiple. The idea is to allow for unique but still speaking IDs.
+# Therefore each risk instance creates its individual ID by taking all affected elements causing the risk to be within an @-delimited part.
+# Using wildcards (the  *  sign) for parts delimited by @ signs allows to handle groups of certain risks at once. Best is to lookup the IDs
+# to use in the created Excel file. Alternatively a model macro "seed-risk-tracking" is available that helps in initially
+# seeding the risk tracking part here based on already identified and not yet handled risks.
+risk_tracking: null
